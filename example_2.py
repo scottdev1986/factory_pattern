@@ -18,7 +18,7 @@ class CheesePizza(Pizza):
         print("Preparing Cheese Pizza")
 
     def cook_time(self):
-        return 10
+        print("Cooking Cheese Pizza for 15 minutes")
 
 
 class GreekPizza(Pizza):
@@ -26,7 +26,7 @@ class GreekPizza(Pizza):
         print("Preparing Greek Pizza")
 
     def cook_time(self):
-        return 20
+        print("Cooking Greek Pizza for 15 minutes")
 
 
 class AllMeatPizza(Pizza):
@@ -34,33 +34,51 @@ class AllMeatPizza(Pizza):
         print("Preparing All Meat Pizza")
 
     def cook_time(self):
-        return 30
+        print("Cooking All Meat Pizza for 20 minutes")
 
 
-def main():
-    pizza: str
+class PizzaFactory(ABC):
+    @abstractmethod
+    def get_pizza(self) -> Pizza:
+        pass
+
+
+class CheesePizzaFactory(PizzaFactory):
+    def get_pizza(self) -> Pizza:
+        return CheesePizza()
+
+
+class GreekPizzaFactory(PizzaFactory):
+    def get_pizza(self) -> Pizza:
+        return GreekPizza()
+
+
+class AllMeatPizzaFactory(PizzaFactory):
+    def get_pizza(self) -> Pizza:
+        return AllMeatPizza()
+
+
+def get_pizza_factory() -> PizzaFactory:
+    pizza_factory = {
+        "cheese": CheesePizzaFactory(),
+        "greek": GreekPizzaFactory(),
+        "allmeat": AllMeatPizzaFactory()
+    }
 
     while True:
-        pizza = input("Enter pizza type (cheese/greek/allmeat): ")
-        if pizza in {"cheese", "greek", "allmeat"}:
-            break
+        pizza_type = input("Enter pizza type (cheese/greek/allmeat): ")
+        if pizza_type in pizza_factory:
+            return pizza_factory[pizza_type]
         else:
             print("Invalid pizza type")
 
-    # Create a pizza object
-    pizza_maker: Pizza
 
-    if pizza == "cheese":
-        pizza_maker = CheesePizza()
-    elif pizza == "greek":
-        pizza_maker = GreekPizza()
-    else:
-        pizza_maker = AllMeatPizza()
+def main():
+    pizza_factory = get_pizza_factory()
 
-    # Prepare the pizza
-    pizza_maker.prepare()
-    # Cook the pizza
-    print("Cooking time:", pizza_maker.cook_time(), "minutes")
+    pizza = pizza_factory.get_pizza()
+    pizza.prepare()
+    pizza.cook_time()
 
 
 if __name__ == "__main__":
